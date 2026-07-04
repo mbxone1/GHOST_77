@@ -1,3 +1,4 @@
+
 package_json = '''{
   "name": "lo-combo-checker",
   "version": "2.0.0",
@@ -37,4 +38,3 @@ with open('/mnt/agents/output/package.json', 'w', encoding='utf-8') as f:
     f.write(package_json)
 
 print("package.json created successfully")
-    
