@@ -1,11 +1,10 @@
 {
   "name": "ghost77-chat",
   "version": "2.0.0",
-  "description": "End-to-end encrypted chat - GHOST 77",
+  "description": "GHOST 77 Encrypted Chat",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
