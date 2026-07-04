@@ -1,7 +1,6 @@
 
-# Let's create the updated server.js with all the requested features
-
-server_js_new = '''const express = require('express');
+# Create completely new and updated server.js
+server_js_final = '''const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -16,7 +15,7 @@ const io = new Server(server, {
 // ====== كلشي في RAM ======
 const rooms = new Map();
 const users = new Map();
-const pendingJoins = new Map(); // طلبات الانضمام المعلقة
+const pendingJoins = new Map();
 
 // تقديم الملفات الثابتة (Frontend)
 app.use(express.static(path.join(__dirname)));
@@ -176,6 +175,7 @@ server.listen(PORT, () => {
 '''
 
 with open('/mnt/agents/output/server.js', 'w', encoding='utf-8') as f:
-    f.write(server_js_new)
+    f.write(server_js_final)
 
-print("✅ server.js created successfully!")
+print("✅ server.js created!")
+print(f"Length: {len(server_js_final)} characters")
