@@ -1,6 +1,6 @@
 
-# Create completely new and updated index.html
-index_html_final = '''<!DOCTYPE html>
+# Create clean, working index.html
+index_html_final = r'''<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -9,7 +9,6 @@ index_html_final = '''<!DOCTYPE html>
   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: #0a0a0a;
@@ -17,28 +16,18 @@ index_html_final = '''<!DOCTYPE html>
       min-height: 100vh;
       overflow-x: hidden;
     }
-
-    /* خلفية */
     .bg-grid {
-      background-image: 
-        linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
       background-size: 50px 50px;
     }
-
-    /* Glassmorphism */
     .glass {
       background: rgba(255,255,255,0.05);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 20px;
     }
-
-    /* Neon glow */
     .neon-green { color: #00ff88; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
     .neon-pink { color: #ff6b9d; text-shadow: 0 0 20px rgba(255,107,157,0.5); }
-    .neon-blue { color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.5); }
-    
     .btn-green {
       background: #00ff88;
       color: #0a0a0a;
@@ -50,12 +39,9 @@ index_html_final = '''<!DOCTYPE html>
       cursor: pointer;
       transition: all 0.3s;
       box-shadow: 0 0 20px rgba(0,255,136,0.3);
+      width: 100%;
     }
-    .btn-green:hover {
-      box-shadow: 0 0 40px rgba(0,255,136,0.6);
-      transform: scale(1.02);
-    }
-
+    .btn-green:hover { box-shadow: 0 0 40px rgba(0,255,136,0.6); transform: scale(1.02); }
     .btn-pink {
       background: #ff6b9d;
       color: #0a0a0a;
@@ -66,11 +52,7 @@ index_html_final = '''<!DOCTYPE html>
       cursor: pointer;
       transition: all 0.3s;
     }
-    .btn-pink:hover {
-      box-shadow: 0 0 20px rgba(255,107,157,0.4);
-      transform: scale(1.02);
-    }
-
+    .btn-pink:hover { box-shadow: 0 0 20px rgba(255,107,157,0.4); transform: scale(1.02); }
     .btn-red {
       background: #ff4444;
       color: #fff;
@@ -81,11 +63,6 @@ index_html_final = '''<!DOCTYPE html>
       cursor: pointer;
       transition: all 0.3s;
     }
-    .btn-red:hover {
-      background: #ff6666;
-    }
-
-    /* Inputs */
     input {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.2);
@@ -96,14 +73,8 @@ index_html_final = '''<!DOCTYPE html>
       width: 100%;
       transition: all 0.3s;
     }
-    input:focus {
-      outline: none;
-      border-color: #00ff88;
-      box-shadow: 0 0 20px rgba(0,255,136,0.2);
-    }
+    input:focus { outline: none; border-color: #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.2); }
     input::placeholder { color: rgba(255,255,255,0.3); }
-
-    /* الشاشات */
     .screen {
       display: none;
       min-height: 100vh;
@@ -112,8 +83,6 @@ index_html_final = '''<!DOCTYPE html>
       padding: 20px;
     }
     .screen.active { display: flex; }
-
-    /* الرسائل */
     .message {
       max-width: 70%;
       padding: 12px 18px;
@@ -144,13 +113,10 @@ index_html_final = '''<!DOCTYPE html>
       font-size: 12px;
       max-width: 100%;
     }
-
     @keyframes slideIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    /* الكتابة */
     .typing-dot {
       width: 8px; height: 8px;
       background: #00ff88;
@@ -160,18 +126,13 @@ index_html_final = '''<!DOCTYPE html>
     }
     .typing-dot:nth-child(2) { animation-delay: 0.2s; }
     .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    
     @keyframes bounce {
       0%, 80%, 100% { transform: translateY(0); }
       40% { transform: translateY(-10px); }
     }
-
-    /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #111; }
     ::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 3px; }
-
-    /* Header */
     .header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -184,8 +145,6 @@ index_html_final = '''<!DOCTYPE html>
       justify-content: space-between;
       align-items: center;
     }
-
-    /* Chat area */
     .chat-container {
       padding-top: 80px;
       padding-bottom: 100px;
@@ -194,8 +153,6 @@ index_html_final = '''<!DOCTYPE html>
       height: 100vh;
       overflow-y: auto;
     }
-
-    /* Input area */
     .input-area {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -211,22 +168,16 @@ index_html_final = '''<!DOCTYPE html>
       left: 50%;
       transform: translateX(-50%);
     }
-
     .status-dot {
       width: 8px; height: 8px;
       border-radius: 50%;
       display: inline-block;
     }
     .status-online { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
-    .status-offline { background: #ff4444; }
-
-    /* Animations */
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-20px); }
     }
-    .float { animation: float 6s ease-in-out infinite; }
-
     .orb {
       position: absolute;
       border-radius: 50%;
@@ -234,8 +185,6 @@ index_html_final = '''<!DOCTYPE html>
       opacity: 0.3;
       pointer-events: none;
     }
-
-    /* User ID Badge */
     .user-id-badge {
       background: rgba(0,255,136,0.1);
       border: 1px solid rgba(0,255,136,0.3);
@@ -249,8 +198,6 @@ index_html_final = '''<!DOCTYPE html>
       align-items: center;
       gap: 8px;
     }
-
-    /* Toast Notification */
     .toast-container {
       position: fixed;
       top: 20px;
@@ -263,7 +210,6 @@ index_html_final = '''<!DOCTYPE html>
       width: 90%;
       max-width: 400px;
     }
-
     .toast {
       background: rgba(255,255,255,0.1);
       backdrop-filter: blur(20px);
@@ -276,22 +222,15 @@ index_html_final = '''<!DOCTYPE html>
       animation: toastSlide 0.3s ease;
       box-shadow: 0 10px 40px rgba(0,0,0,0.3);
     }
-
     @keyframes toastSlide {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
-    .toast-exit {
-      animation: toastExit 0.3s ease forwards;
-    }
-
+    .toast-exit { animation: toastExit 0.3s ease forwards; }
     @keyframes toastExit {
       from { opacity: 1; transform: translateY(0); }
       to { opacity: 0; transform: translateY(-20px); }
     }
-
-    /* Members list */
     .members-list {
       position: fixed;
       top: 70px;
@@ -307,9 +246,7 @@ index_html_final = '''<!DOCTYPE html>
       z-index: 99;
       display: none;
     }
-
     .members-list.show { display: block; }
-
     .member-item {
       display: flex;
       align-items: center;
@@ -318,12 +255,7 @@ index_html_final = '''<!DOCTYPE html>
       border-radius: 8px;
       margin-bottom: 4px;
     }
-
-    .member-item:hover {
-      background: rgba(255,255,255,0.05);
-    }
-
-    /* Room code display */
+    .member-item:hover { background: rgba(255,255,255,0.05); }
     .room-code-box {
       background: rgba(0,255,136,0.1);
       border: 2px dashed rgba(0,255,136,0.5);
@@ -332,7 +264,6 @@ index_html_final = '''<!DOCTYPE html>
       text-align: center;
       margin-top: 15px;
     }
-
     .room-code-text {
       font-size: 28px;
       font-weight: bold;
@@ -340,8 +271,6 @@ index_html_final = '''<!DOCTYPE html>
       color: #00ff88;
       font-family: monospace;
     }
-
-    /* Copy button */
     .copy-btn {
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.2);
@@ -356,15 +285,6 @@ index_html_final = '''<!DOCTYPE html>
       background: rgba(0,255,136,0.2);
       border-color: #00ff88;
     }
-
-    /* Pulse animation for new messages */
-    @keyframes pulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
-      50% { box-shadow: 0 0 0 10px rgba(0,255,136,0); }
-    }
-    .pulse { animation: pulse 2s infinite; }
-
-    /* Responsive */
     @media (max-width: 600px) {
       .message { max-width: 85%; }
       .input-area { padding: 10px 15px; }
@@ -374,22 +294,18 @@ index_html_final = '''<!DOCTYPE html>
 </head>
 <body class="bg-grid">
 
-  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- خلفية -->
   <div class="orb" style="width:400px;height:400px;background:#00ff88;top:-100px;left:-100px;animation:float 8s infinite"></div>
   <div class="orb" style="width:300px;height:300px;background:#ff6b9d;bottom:-50px;right:-50px;animation:float 10s infinite 2s"></div>
   <div class="orb" style="width:250px;height:250px;background:#00d4ff;top:50%;left:50%;animation:float 12s infinite 4s"></div>
 
-  <!-- ====== شاشة الترحيب ====== -->
   <div id="welcomeScreen" class="screen active">
     <div class="glass" style="padding:40px;text-align:center;max-width:420px;width:100%">
       <div style="font-size:56px;margin-bottom:10px;animation:float 3s infinite">👻</div>
       <h1 style="font-size:40px;font-weight:bold;margin-bottom:5px" class="neon-green">GHOST 77</h1>
       <p style="color:rgba(255,255,255,0.5);margin-bottom:25px">دردشة مشفرة • ما كاين حتى تخزين</p>
       
-      <!-- رقم المستخدم -->
       <div style="margin-bottom:20px">
         <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:8px;text-align:right">🆔 رقمك السري (تلقائي)</label>
         <div class="user-id-badge" style="width:100%;justify-content:center">
@@ -400,7 +316,7 @@ index_html_final = '''<!DOCTYPE html>
       
       <input type="text" id="nicknameInput" placeholder="سّميتك..." maxlength="20" style="margin-bottom:15px">
       
-      <button class="btn-green" onclick="startChat()" style="width:100%">
+      <button class="btn-green" onclick="startChat()">
         👻 دخل للدردشة
       </button>
       
@@ -413,7 +329,6 @@ index_html_final = '''<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- ====== شاشة الغرف ====== -->
   <div id="roomsScreen" class="screen">
     <div style="max-width:420px;width:100%">
       <div style="text-align:center;margin-bottom:25px">
@@ -447,9 +362,7 @@ index_html_final = '''<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- ====== شاشة الدردشة ====== -->
   <div id="chatScreen" class="screen" style="display:none;flex-direction:column;padding:0">
-    <!-- Header -->
     <div class="header">
       <div style="display:flex;align-items:center;gap:12px">
         <div>
@@ -469,16 +382,13 @@ index_html_final = '''<!DOCTYPE html>
       </div>
     </div>
 
-    <!-- Members List -->
     <div class="members-list" id="membersList">
       <h4 style="color:#00ff88;margin-bottom:10px;font-size:14px">👥 الأعضاء</h4>
       <div id="membersListContent"></div>
     </div>
 
-    <!-- Messages -->
     <div class="chat-container" id="messagesContainer"></div>
 
-    <!-- Typing indicator -->
     <div id="typingIndicator" style="display:none;position:fixed;bottom:80px;right:20px;color:rgba(255,255,255,0.5);font-size:12px;background:rgba(0,0,0,0.5);padding:5px 12px;border-radius:20px">
       <span id="typingName"></span> كيكتب
       <span class="typing-dot"></span>
@@ -486,29 +396,25 @@ index_html_final = '''<!DOCTYPE html>
       <span class="typing-dot"></span>
     </div>
 
-    <!-- Input -->
     <div class="input-area">
       <input type="text" id="messageInput" placeholder="كتب رسالة مشفرة... 🔐" style="flex:1" onkeypress="handleKeyPress(event)" oninput="handleTyping()">
-      <button class="btn-green" onclick="sendMessage()" style="padding:12px 20px">📤</button>
+      <button class="btn-green" onclick="sendMessage()" style="padding:12px 20px;width:auto">📤</button>
     </div>
   </div>
 
   <script>
-    // ====== VARIABLES ======
     let socket = null;
     let nickname = '';
     let roomId = '';
     let typingTimeout = null;
     let myUserId = '';
-    let myPublicKey = '';
     let myPrivateKey = '';
     let currentUsers = [];
 
-    // ====== USER ID GENERATION ======
     function generateUserId() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let id = '#';
-      for(let i=0; i<6; i++) {
+      for(let i = 0; i < 6; i++) {
         id += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return id;
@@ -523,17 +429,16 @@ index_html_final = '''<!DOCTYPE html>
       return id;
     }
 
-    // ====== CRYPTO (بسيط) ======
     function generateKeys() {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
       let key = '';
-      for(let i=0; i<32; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+      for(let i = 0; i < 32; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
       return key;
     }
 
     function encrypt(text, key) {
       let result = '';
-      for(let i=0; i<text.length; i++) {
+      for(let i = 0; i < text.length; i++) {
         result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
       }
       return btoa(result);
@@ -543,15 +448,14 @@ index_html_final = '''<!DOCTYPE html>
       try {
         const text = atob(encrypted);
         let result = '';
-        for(let i=0; i<text.length; i++) {
+        for(let i = 0; i < text.length; i++) {
           result += String.fromCharCode(text.charCodeAt(i) ^ key.charCodeAt(i % key.length));
         }
         return result;
-      } catch(e) { return '[مشفر]'; }
+      } catch(e) { return '[encrypted]'; }
     }
 
-    // ====== TOAST NOTIFICATIONS ======
-    function showToast(message, type = 'info', actions = null) {
+    function showToast(message, type, actions) {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -559,67 +463,56 @@ index_html_final = '''<!DOCTYPE html>
       let icon = '👻';
       if(type === 'success') icon = '✅';
       if(type === 'error') icon = '❌';
-      if(type === 'warning') icon = '⚠️';
       if(type === 'request') icon = '🔔';
 
-      let html = `
-        <div style="font-size:24px">${icon}</div>
-        <div style="flex:1">
-          <div style="font-weight:bold;color:#00ff88;font-size:14px;margin-bottom:3px">GHOST 77</div>
-          <div style="font-size:13px;color:rgba(255,255,255,0.9)">${message}</div>
-        </div>
-      `;
+      let html = '<div style="font-size:24px">' + icon + '</div>' +
+        '<div style="flex:1">' +
+        '<div style="font-weight:bold;color:#00ff88;font-size:14px;margin-bottom:3px">GHOST 77</div>' +
+        '<div style="font-size:13px;color:rgba(255,255,255,0.9)">' + message + '</div>' +
+        '</div>';
 
       if(actions) {
-        html += `
-          <div style="display:flex;gap:8px">
-            <button class="btn-green" style="padding:6px 14px;font-size:12px" onclick="${actions.yesAction};this.parentElement.parentElement.remove()">نعم</button>
-            <button class="btn-red" style="padding:6px 14px;font-size:12px" onclick="${actions.noAction};this.parentElement.parentElement.remove()">لا</button>
-          </div>
-        `;
+        html += '<div style="display:flex;gap:8px">' +
+          '<button class="btn-green" style="padding:6px 14px;font-size:12px" onclick="' + actions.yesAction + ';this.parentElement.parentElement.remove()">نعم</button>' +
+          '<button class="btn-red" style="padding:6px 14px;font-size:12px" onclick="' + actions.noAction + ';this.parentElement.parentElement.remove()">لا</button>' +
+          '</div>';
       }
 
       toast.innerHTML = html;
       container.appendChild(toast);
 
-      // Auto remove after 5 seconds if no actions
       if(!actions) {
-        setTimeout(() => {
+        setTimeout(function() {
           toast.classList.add('toast-exit');
-          setTimeout(() => toast.remove(), 300);
+          setTimeout(function() { toast.remove(); }, 300);
         }, 5000);
       }
     }
 
-    // ====== COPY FUNCTIONS ======
     function copyUserId() {
-      navigator.clipboard.writeText(myUserId).then(() => {
-        showToast('✅ رقمك نسخ!', 'success');
+      navigator.clipboard.writeText(myUserId).then(function() {
+        showToast('تم نسخ الرقم!', 'success');
       });
     }
 
     function copyRoomCode() {
       const code = document.getElementById('roomCodeDisplay').textContent;
-      navigator.clipboard.writeText(code).then(() => {
-        showToast('✅ كود الغرفة نسخ!', 'success');
+      navigator.clipboard.writeText(code).then(function() {
+        showToast('تم نسخ الكود!', 'success');
       });
     }
 
-    // ====== START ======
     function startChat() {
       const input = document.getElementById('nicknameInput');
       nickname = input.value.trim();
       if(nickname.length < 2) {
-        showToast('سّميتك خاصها تكون 2 حروف على الأقل!', 'error');
+        showToast('الاسم يجب أن يكون حرفين على الأقل!', 'error');
         return;
       }
 
-      // Generate keys
       myPrivateKey = generateKeys();
-      myPublicKey = generateKeys();
       myUserId = getOrCreateUserId();
 
-      // Update displays
       document.getElementById('userNickname').textContent = nickname;
       document.getElementById('userIdDisplay').textContent = myUserId;
       document.getElementById('roomsUserId').textContent = myUserId;
@@ -629,23 +522,69 @@ index_html_final = '''<!DOCTYPE html>
       connectSocket();
     }
 
-    // ====== SOCKET ======
     function connectSocket() {
       const serverUrl = window.location.origin;
       socket = io(serverUrl);
 
-      socket.on('connect', () => {
-        console.log('✅ متصل');
-        showToast('✅ متصل بالسيرفر', 'success');
+      socket.on('connect', function() {
+        console.log('Connected');
+        showToast('متصل بالسيرفر!', 'success');
       });
 
-      socket.on('disconnect', () => {
-        console.log('❌ منفصل');
-        showToast('❌ انقطع الاتصال', 'error');
+      socket.on('disconnect', function() {
+        console.log('Disconnected');
+        showToast('انقطع الاتصال!', 'error');
       });
 
-      socket.on('room-created', ({ roomId: id }) => {
-        roomId = id;
-        document.getElementById('roomCodeDisplay').textContent = id;
+      socket.on('room-created', function(data) {
+        roomId = data.roomId;
+        document.getElementById('roomCodeDisplay').textContent = data.roomId;
         document.getElementById('createdRoom').style.display = 'block';
-        // Auto join after showing
+        setTimeout(function() {
+          requestJoinRoom(data.roomId);
+        }, 500);
+      });
+
+      socket.on('joined-room', function(data) {
+        roomId = data.roomId;
+        currentUsers = data.users;
+        document.getElementById('chatRoomId').textContent = data.roomId;
+        document.getElementById('onlineCount').textContent = data.users.length;
+        showScreen('chatScreen');
+        updateMembersList();
+        showToast('دخلت الغرفة!', 'success');
+      });
+
+      socket.on('user-joined', function(data) {
+        addMessage('system', '👻 ' + data.nickname + ' (' + data.userId + ') دخل للغرفة');
+        updateOnlineCount(1);
+      });
+
+      socket.on('user-left', function(data) {
+        addMessage('system', '👋 ' + data.nickname + ' (' + data.userId + ') خرج من الغرفة');
+        updateOnlineCount(-1);
+      });
+
+      socket.on('new-message', function(data) {
+        const decrypted = decrypt(data.encrypted, myPrivateKey);
+        addMessage('other', decrypted, data.sender, data.senderId);
+      });
+
+      socket.on('user-typing', function(data) {
+        const indicator = document.getElementById('typingIndicator');
+        const typingName = document.getElementById('typingName');
+        if(data.isTyping) {
+          typingName.textContent = data.nickname;
+          indicator.style.display = 'block';
+        } else {
+          indicator.style.display = 'none';
+        }
+      });
+
+      socket.on('join-request', function(data) {
+        showToast(
+          data.nickname + ' (' + data.userId + ') يريد الدخول',
+          'request',
+          {
+            yesAction: "approveJoin('" + data.requesterId + "', true)",
+            noAction: "approveJo
