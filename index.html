@@ -1,9 +1,12 @@
-<!DOCTYPE html>
-<html lang="ar">
+
+# Now create the updated index.html with all requested features
+
+index_html_new = '''<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NionChat - دردشة مشفرة</title>
+  <title>GHOST 77 - دردشة مشفرة</title>
   <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -35,6 +38,7 @@
     /* Neon glow */
     .neon-green { color: #00ff88; text-shadow: 0 0 20px rgba(0,255,136,0.5); }
     .neon-pink { color: #ff6b9d; text-shadow: 0 0 20px rgba(255,107,157,0.5); }
+    .neon-blue { color: #00d4ff; text-shadow: 0 0 20px rgba(0,212,255,0.5); }
     
     .btn-green {
       background: #00ff88;
@@ -62,6 +66,24 @@
       font-weight: bold;
       cursor: pointer;
       transition: all 0.3s;
+    }
+    .btn-pink:hover {
+      box-shadow: 0 0 20px rgba(255,107,157,0.4);
+      transform: scale(1.02);
+    }
+
+    .btn-red {
+      background: #ff4444;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-red:hover {
+      background: #ff6666;
     }
 
     /* Inputs */
@@ -104,13 +126,16 @@
     .message.mine {
       background: rgba(0,255,136,0.1);
       border: 1px solid rgba(0,255,136,0.3);
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
+      margin-right: auto;
+      margin-left: 0;
+      border-bottom-left-radius: 4px;
+      text-align: left;
     }
     .message.other {
       background: rgba(255,255,255,0.05);
       border: 1px solid rgba(255,255,255,0.1);
-      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+      text-align: right;
     }
     .message.system {
       background: transparent;
@@ -210,30 +235,180 @@
       opacity: 0.3;
       pointer-events: none;
     }
+
+    /* User ID Badge */
+    .user-id-badge {
+      background: rgba(0,255,136,0.1);
+      border: 1px solid rgba(0,255,136,0.3);
+      color: #00ff88;
+      padding: 8px 15px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-size: 14px;
+      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    .toast {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0,255,136,0.3);
+      border-radius: 16px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      animation: toastSlide 0.3s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    @keyframes toastSlide {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .toast-exit {
+      animation: toastExit 0.3s ease forwards;
+    }
+
+    @keyframes toastExit {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+
+    /* Members list */
+    .members-list {
+      position: fixed;
+      top: 70px;
+      right: 20px;
+      background: rgba(10,10,10,0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 15px;
+      min-width: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 99;
+      display: none;
+    }
+
+    .members-list.show { display: block; }
+
+    .member-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+    }
+
+    .member-item:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* Room code display */
+    .room-code-box {
+      background: rgba(0,255,136,0.1);
+      border: 2px dashed rgba(0,255,136,0.5);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .room-code-text {
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 5px;
+      color: #00ff88;
+      font-family: monospace;
+    }
+
+    /* Copy button */
+    .copy-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s;
+    }
+    .copy-btn:hover {
+      background: rgba(0,255,136,0.2);
+      border-color: #00ff88;
+    }
+
+    /* Pulse animation for new messages */
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.4); }
+      50% { box-shadow: 0 0 0 10px rgba(0,255,136,0); }
+    }
+    .pulse { animation: pulse 2s infinite; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .message { max-width: 85%; }
+      .input-area { padding: 10px 15px; }
+      .header { padding: 10px 15px; }
+    }
   </style>
 </head>
 <body class="bg-grid">
 
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
   <!-- خلفية -->
   <div class="orb" style="width:400px;height:400px;background:#00ff88;top:-100px;left:-100px;animation:float 8s infinite"></div>
   <div class="orb" style="width:300px;height:300px;background:#ff6b9d;bottom:-50px;right:-50px;animation:float 10s infinite 2s"></div>
+  <div class="orb" style="width:250px;height:250px;background:#00d4ff;top:50%;left:50%;animation:float 12s infinite 4s"></div>
 
   <!-- ====== شاشة الترحيب ====== -->
   <div id="welcomeScreen" class="screen active">
-    <div class="glass" style="padding:40px;text-align:center;max-width:400px;width:100%">
-      <div style="font-size:48px;margin-bottom:10px">🔒</div>
-      <h1 style="font-size:36px;font-weight:bold;margin-bottom:5px" class="neon-green">NION CHAT</h1>
-      <p style="color:rgba(255,255,255,0.5);margin-bottom:30px">دردشة مشفرة • ما كاين حتى تخزين</p>
+    <div class="glass" style="padding:40px;text-align:center;max-width:420px;width:100%">
+      <div style="font-size:56px;margin-bottom:10px;animation:float 3s infinite">👻</div>
+      <h1 style="font-size:40px;font-weight:bold;margin-bottom:5px" class="neon-green">GHOST 77</h1>
+      <p style="color:rgba(255,255,255,0.5);margin-bottom:25px">دردشة مشفرة • ما كاين حتى تخزين</p>
+      
+      <!-- رقم المستخدم -->
+      <div style="margin-bottom:20px">
+        <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:8px;text-align:right">🆔 رقمك السري (تلقائي)</label>
+        <div class="user-id-badge" style="width:100%;justify-content:center">
+          <span id="userIdDisplay">#------</span>
+          <button class="copy-btn" onclick="copyUserId()">📋 نسخ</button>
+        </div>
+      </div>
       
       <input type="text" id="nicknameInput" placeholder="سّميتك..." maxlength="20" style="margin-bottom:15px">
       
       <button class="btn-green" onclick="startChat()" style="width:100%">
-        دخل للدردشة
+        👻 دخل للدردشة
       </button>
       
-      <div style="margin-top:20px;display:flex;gap:15px;justify-content:center;font-size:12px;color:rgba(255,255,255,0.4)">
+      <div style="margin-top:25px;display:flex;gap:15px;justify-content:center;font-size:12px;color:rgba(255,255,255,0.4);flex-wrap:wrap">
         <span>🔐 تشفير كامل</span>
         <span>💾 RAM فقط</span>
+        <span>👥 10 أشخاص</span>
         <span>⚡ فوري</span>
       </div>
     </div>
@@ -241,12 +416,17 @@
 
   <!-- ====== شاشة الغرف ====== -->
   <div id="roomsScreen" class="screen">
-    <div style="max-width:400px;width:100%">
-      <h2 style="text-align:center;margin-bottom:30px">مرحبا <span class="neon-green" id="userNickname"></span></h2>
+    <div style="max-width:420px;width:100%">
+      <div style="text-align:center;margin-bottom:25px">
+        <h2 style="margin-bottom:5px">مرحبا <span class="neon-green" id="userNickname"></span></h2>
+        <div class="user-id-badge" style="font-size:12px">
+          <span id="roomsUserId">#------</span>
+        </div>
+      </div>
       
       <div class="glass" style="padding:30px;margin-bottom:20px;cursor:pointer;transition:all 0.3s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="createRoom()">
         <h3 class="neon-green" style="margin-bottom:5px">➕ غرفة جديدة</h3>
-        <p style="color:rgba(255,255,255,0.5);font-size:14px">دردشة خاصة 1 على 1</p>
+        <p style="color:rgba(255,255,255,0.5);font-size:14px">دردشة خاصة حتى 10 أشخاص</p>
       </div>
 
       <div class="glass" style="padding:30px;margin-bottom:20px">
@@ -257,10 +437,13 @@
         </div>
       </div>
 
-      <div id="createdRoom" style="display:none;text-align:center;margin-top:20px">
-        <p style="color:rgba(255,255,255,0.5);margin-bottom:10px">كود الغرفة ديالك:</p>
-        <div style="font-size:32px;font-weight:bold;letter-spacing:5px" class="neon-green" id="roomCodeDisplay"></div>
-        <p style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:10px">بعت هاد الكود للصاحب ديالك</p>
+      <div id="createdRoom" style="display:none">
+        <div class="room-code-box">
+          <p style="color:rgba(255,255,255,0.6);margin-bottom:10px;font-size:14px">🎫 كود الغرفة ديالك:</p>
+          <div class="room-code-text" id="roomCodeDisplay">------</div>
+          <button class="copy-btn" style="margin-top:10px" onclick="copyRoomCode()">📋 نسخ الكود</button>
+        </div>
+        <p style="color:rgba(255,255,255,0.3);font-size:12px;margin-top:10px;text-align:center">📤 بعت هاد الكود للصاحب ديالك باش يدخل</p>
       </div>
     </div>
   </div>
@@ -269,21 +452,35 @@
   <div id="chatScreen" class="screen" style="display:none;flex-direction:column;padding:0">
     <!-- Header -->
     <div class="header">
-      <div>
-        <h3 style="font-size:16px">غرفة: <span class="neon-green" id="chatRoomId"></span></h3>
-        <div style="font-size:12px;color:rgba(255,255,255,0.5)">
-          <span class="status-dot status-online"></span>
-          <span id="onlineCount">1</span> متصل
+      <div style="display:flex;align-items:center;gap:12px">
+        <div>
+          <h3 style="font-size:16px">👻 <span class="neon-green" id="chatRoomId"></span></h3>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:5px">
+            <span class="status-dot status-online"></span>
+            <span id="onlineCount">1</span> متصل
+            <button onclick="toggleMembers()" style="background:none;border:none;color:#00ff88;cursor:pointer;font-size:12px;margin-right:5px">👥</button>
+          </div>
         </div>
       </div>
-      <button onclick="leaveRoom()" style="background:rgba(255,255,255,0.1);border:none;color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer">خروج</button>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="user-id-badge" style="font-size:11px;padding:5px 10px">
+          <span id="chatUserId">#------</span>
+        </div>
+        <button onclick="leaveRoom()" class="btn-red" style="font-size:12px;padding:6px 12px">🚪 خروج</button>
+      </div>
+    </div>
+
+    <!-- Members List -->
+    <div class="members-list" id="membersList">
+      <h4 style="color:#00ff88;margin-bottom:10px;font-size:14px">👥 الأعضاء</h4>
+      <div id="membersListContent"></div>
     </div>
 
     <!-- Messages -->
     <div class="chat-container" id="messagesContainer"></div>
 
     <!-- Typing indicator -->
-    <div id="typingIndicator" style="display:none;position:fixed;bottom:80px;left:20px;color:rgba(255,255,255,0.5);font-size:12px">
+    <div id="typingIndicator" style="display:none;position:fixed;bottom:80px;right:20px;color:rgba(255,255,255,0.5);font-size:12px;background:rgba(0,0,0,0.5);padding:5px 12px;border-radius:20px">
       <span id="typingName"></span> كيكتب
       <span class="typing-dot"></span>
       <span class="typing-dot"></span>
@@ -292,7 +489,7 @@
 
     <!-- Input -->
     <div class="input-area">
-      <input type="text" id="messageInput" placeholder="كتب رسالة مشفرة..." style="flex:1" onkeypress="handleKeyPress(event)" oninput="handleTyping()">
+      <input type="text" id="messageInput" placeholder="كتب رسالة مشفرة... 🔐" style="flex:1" onkeypress="handleKeyPress(event)" oninput="handleTyping()">
       <button class="btn-green" onclick="sendMessage()" style="padding:12px 20px">📤</button>
     </div>
   </div>
@@ -303,8 +500,29 @@
     let nickname = '';
     let roomId = '';
     let typingTimeout = null;
+    let myUserId = '';
     let myPublicKey = '';
     let myPrivateKey = '';
+    let currentUsers = [];
+
+    // ====== USER ID GENERATION ======
+    function generateUserId() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let id = '#';
+      for(let i=0; i<6; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return id;
+    }
+
+    function getOrCreateUserId() {
+      let id = localStorage.getItem('ghost77_userId');
+      if(!id) {
+        id = generateUserId();
+        localStorage.setItem('ghost77_userId', id);
+      }
+      return id;
+    }
 
     // ====== CRYPTO (بسيط) ======
     function generateKeys() {
@@ -333,162 +551,102 @@
       } catch(e) { return '[مشفر]'; }
     }
 
+    // ====== TOAST NOTIFICATIONS ======
+    function showToast(message, type = 'info', actions = null) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      
+      let icon = '👻';
+      if(type === 'success') icon = '✅';
+      if(type === 'error') icon = '❌';
+      if(type === 'warning') icon = '⚠️';
+      if(type === 'request') icon = '🔔';
+
+      let html = `
+        <div style="font-size:24px">${icon}</div>
+        <div style="flex:1">
+          <div style="font-weight:bold;color:#00ff88;font-size:14px;margin-bottom:3px">GHOST 77</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.9)">${message}</div>
+        </div>
+      `;
+
+      if(actions) {
+        html += `
+          <div style="display:flex;gap:8px">
+            <button class="btn-green" style="padding:6px 14px;font-size:12px" onclick="${actions.yesAction};this.parentElement.parentElement.remove()">نعم</button>
+            <button class="btn-red" style="padding:6px 14px;font-size:12px" onclick="${actions.noAction};this.parentElement.parentElement.remove()">لا</button>
+          </div>
+        `;
+      }
+
+      toast.innerHTML = html;
+      container.appendChild(toast);
+
+      // Auto remove after 5 seconds if no actions
+      if(!actions) {
+        setTimeout(() => {
+          toast.classList.add('toast-exit');
+          setTimeout(() => toast.remove(), 300);
+        }, 5000);
+      }
+    }
+
+    // ====== COPY FUNCTIONS ======
+    function copyUserId() {
+      navigator.clipboard.writeText(myUserId).then(() => {
+        showToast('✅ رقمك نسخ!', 'success');
+      });
+    }
+
+    function copyRoomCode() {
+      const code = document.getElementById('roomCodeDisplay').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        showToast('✅ كود الغرفة نسخ!', 'success');
+      });
+    }
+
     // ====== START ======
     function startChat() {
       const input = document.getElementById('nicknameInput');
       nickname = input.value.trim();
       if(nickname.length < 2) {
-        alert('سّميتك خاصها تكون 2 حروف على الأقل!');
+        showToast('سّميتك خاصها تكون 2 حروف على الأقل!', 'error');
         return;
       }
 
       // Generate keys
       myPrivateKey = generateKeys();
       myPublicKey = generateKeys();
+      myUserId = getOrCreateUserId();
 
+      // Update displays
       document.getElementById('userNickname').textContent = nickname;
+      document.getElementById('userIdDisplay').textContent = myUserId;
+      document.getElementById('roomsUserId').textContent = myUserId;
+      document.getElementById('chatUserId').textContent = myUserId;
+
       showScreen('roomsScreen');
       connectSocket();
     }
 
     // ====== SOCKET ======
     function connectSocket() {
-      // استخدم نفس الرابط (للنشر على Railway)
       const serverUrl = window.location.origin;
       socket = io(serverUrl);
 
-      socket.on('connect', () => console.log('✅ متصل'));
-      socket.on('disconnect', () => console.log('❌ منفصل'));
+      socket.on('connect', () => {
+        console.log('✅ متصل');
+        showToast('✅ متصل بالسيرفر', 'success');
+      });
+
+      socket.on('disconnect', () => {
+        console.log('❌ منفصل');
+        showToast('❌ انقطع الاتصال', 'error');
+      });
 
       socket.on('room-created', ({ roomId: id }) => {
         roomId = id;
         document.getElementById('roomCodeDisplay').textContent = id;
         document.getElementById('createdRoom').style.display = 'block';
-        joinRoomById(id);
-      });
-
-      socket.on('joined-room', ({ roomId: id, users }) => {
-        roomId = id;
-        document.getElementById('chatRoomId').textContent = id;
-        document.getElementById('onlineCount').textContent = users.length;
-        showScreen('chatScreen');
-      });
-
-      socket.on('user-joined', ({ nickname: name }) => {
-        addMessage('system', `${name} دخل للغرفة`);
-        updateOnlineCount(1);
-      });
-
-      socket.on('user-left', ({ nickname: name }) => {
-        addMessage('system', `${name} خرج من الغرفة`);
-        updateOnlineCount(-1);
-      });
-
-      socket.on('new-message', ({ sender, encrypted, timestamp }) => {
-        // فك التشفير
-        const decrypted = decrypt(encrypted, myPrivateKey);
-        addMessage('other', decrypted, sender);
-      });
-
-      socket.on('user-typing', ({ nickname: name, isTyping }) => {
-        const indicator = document.getElementById('typingIndicator');
-        const typingName = document.getElementById('typingName');
-        if(isTyping) {
-          typingName.textContent = name;
-          indicator.style.display = 'block';
-        } else {
-          indicator.style.display = 'none';
-        }
-      });
-
-      socket.on('error', (msg) => alert('خطأ: ' + msg));
-    }
-
-    // ====== ROOM ACTIONS ======
-    function createRoom() {
-      socket.emit('create-room', { nickname });
-    }
-
-    function joinRoom() {
-      const id = document.getElementById('joinRoomId').value.trim().toUpperCase();
-      if(id) joinRoomById(id);
-    }
-
-    function joinRoomById(id) {
-      socket.emit('join-room', { roomId: id, nickname });
-    }
-
-    function leaveRoom() {
-      socket.disconnect();
-      location.reload();
-    }
-
-    // ====== MESSAGING ======
-    function sendMessage() {
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if(!text) return;
-
-      // تشفير
-      const encrypted = encrypt(text, myPrivateKey);
-
-      // بعت
-      socket.emit('send-message', {
-        roomId,
-        encrypted,
-        timestamp: Date.now()
-      });
-
-      // وري فالشاشة
-      addMessage('mine', text);
-      input.value = '';
-      stopTyping();
-    }
-
-    function handleKeyPress(e) {
-      if(e.key === 'Enter') sendMessage();
-    }
-
-    function handleTyping() {
-      socket.emit('typing', { roomId, isTyping: true });
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(stopTyping, 2000);
-    }
-
-    function stopTyping() {
-      socket.emit('typing', { roomId, isTyping: false });
-    }
-
-    // ====== UI ======
-    function addMessage(type, content, sender) {
-      const container = document.getElementById('messagesContainer');
-      const div = document.createElement('div');
-      div.className = `message ${type}`;
       
-      if(type === 'system') {
-        div.textContent = content;
-      } else {
-        if(type === 'other') {
-          div.innerHTML = `<div style="font-size:12px;color:#00ff88;margin-bottom:4px">${sender}</div>${content}`;
-        } else {
-          div.textContent = content;
-        }
-      }
-      
-      container.appendChild(div);
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function updateOnlineCount(change) {
-      const count = document.getElementById('onlineCount');
-      count.textContent = parseInt(count.textContent) + change;
-    }
-
-    function showScreen(id) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      const screen = document.getElementById(id);
-      if(screen) screen.classList.add('active');
-    }
-  </script>
-</body>
-</html>
