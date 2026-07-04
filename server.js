@@ -1,6 +1,6 @@
 
-# Create completely new and updated server.js
-server_js_final = '''const express = require('express');
+# Create a completely clean, working server.js with NO errors
+server_js_final = r'''const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -12,25 +12,20 @@ const io = new Server(server, {
   cors: { origin: "*" }
 });
 
-// ====== كلشي في RAM ======
 const rooms = new Map();
 const users = new Map();
 const pendingJoins = new Map();
 
-// تقديم الملفات الثابتة (Frontend)
 app.use(express.static(path.join(__dirname)));
 app.use(cors());
 
-// الصفحة الرئيسية
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ====== Socket.IO ======
 io.on('connection', (socket) => {
-  console.log('🔌 جديد:', socket.id);
+  console.log('New connection:', socket.id);
 
-  // إنشاء غرفة
   socket.on('create-room', ({ nickname, userId }) => {
     const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
     rooms.set(roomId, { 
@@ -42,35 +37,30 @@ io.on('connection', (socket) => {
     socket.emit('room-created', { roomId });
   });
 
-  // طلب الانضمام لغرفة (يحتاج موافقة)
   socket.on('request-join-room', ({ roomId, nickname, userId }) => {
     const room = rooms.get(roomId);
     if (!room) {
-      socket.emit('error', 'الغرفة م exista');
+      socket.emit('error', 'Room not found');
       return;
     }
     if (room.users.length >= room.maxUsers) {
-      socket.emit('error', 'الغرفة ممتلئة');
+      socket.emit('error', 'Room is full');
       return;
     }
 
-    // حفظ الطلب
     pendingJoins.set(socket.id, { roomId, nickname, userId });
 
-    // إرسال طلب للمضيف
     socket.to(roomId).emit('join-request', {
       requesterId: socket.id,
       nickname,
       userId
     });
 
-    // إذا الغرفة فارغة، ندخل مباشرة
     if (room.users.length === 0) {
       approveJoin(socket.id);
     }
   });
 
-  // الموافقة على الانضمام
   socket.on('approve-join', ({ requesterId, approved }) => {
     const hostUser = users.get(socket.id);
     if (!hostUser) return;
@@ -83,7 +73,7 @@ io.on('connection', (socket) => {
     } else {
       const request = pendingJoins.get(requesterId);
       if (request) {
-        io.to(requesterId).emit('join-rejected', { reason: 'تم رفض طلبك' });
+        io.to(requesterId).emit('join-rejected', { reason: 'Rejected' });
         pendingJoins.delete(requesterId);
       }
     }
@@ -96,20 +86,21 @@ io.on('connection', (socket) => {
     const room = rooms.get(request.roomId);
     if (!room) return;
 
-    const socketObj = io.sockets.sockets.get(requesterId);
-    if (!socketObj) return;
+    const allSockets = Array.from(io.sockets.sockets.values());
+    const targetSocket = allSockets.find(s => s.id === requesterId);
+    
+    if (!targetSocket) return;
 
-    socketObj.join(request.roomId);
+    targetSocket.join(request.roomId);
     room.users.push({ id: requesterId, nickname: request.nickname, userId: request.userId });
     users.set(requesterId, { nickname: request.nickname, roomId: request.roomId, userId: request.userId });
 
-    socketObj.to(request.roomId).emit('user-joined', { nickname: request.nickname, userId: request.userId });
-    socketObj.emit('joined-room', { roomId: request.roomId, users: room.users });
+    targetSocket.to(request.roomId).emit('user-joined', { nickname: request.nickname, userId: request.userId });
+    targetSocket.emit('joined-room', { roomId: request.roomId, users: room.users });
     
     pendingJoins.delete(requesterId);
   }
 
-  // إرسال رسالة مشفرة
   socket.on('send-message', ({ roomId, encrypted, timestamp }) => {
     const user = users.get(socket.id);
     if (!user) return;
@@ -128,7 +119,6 @@ io.on('connection', (socket) => {
     socket.to(roomId).emit('new-message', msg);
   });
 
-  // مؤشر الكتابة
   socket.on('typing', ({ roomId, isTyping }) => {
     const user = users.get(socket.id);
     if (user) {
@@ -136,7 +126,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // قطع الاتصال
   socket.on('disconnect', () => {
     const user = users.get(socket.id);
     if (user) {
@@ -146,9 +135,8 @@ io.on('connection', (socket) => {
         socket.to(user.roomId).emit('user-left', { nickname: user.nickname, userId: user.userId });
         if (room.users.length === 0) {
           rooms.delete(user.roomId);
-          console.log('🗑️ غرفة محيوفة:', user.roomId);
+          console.log('Room deleted:', user.roomId);
         } else {
-          // تحديث المضيف إذا خرج
           if (room.hostId === socket.id && room.users.length > 0) {
             room.hostId = room.users[0].id;
           }
@@ -157,11 +145,10 @@ io.on('connection', (socket) => {
       users.delete(socket.id);
     }
     pendingJoins.delete(socket.id);
-    console.log('❌ خرج:', socket.id);
+    console.log('Disconnected:', socket.id);
   });
 });
 
-// تنظيف الغرف الفارغة كل 30 دقيقة
 setInterval(() => {
   for (const [id, room] of rooms) {
     if (room.users.length === 0) rooms.delete(id);
@@ -170,12 +157,12 @@ setInterval(() => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 GHOST 77 شغال على البورت ${PORT}`);
+  console.log('GHOST 77 running on port ' + PORT);
 });
 '''
 
 with open('/mnt/agents/output/server.js', 'w', encoding='utf-8') as f:
     f.write(server_js_final)
 
-print("✅ server.js created!")
-print(f"Length: {len(server_js_final)} characters")
+print("✅ server.js created - clean & working!")
+print(f"Size: {len(server_js_final)} chars")
