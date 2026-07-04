@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GHOST 77</title>
+<title>GHOST 77 v3.0</title>
 <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -12,22 +12,32 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#0a0a0a;color:#fff;m
 .glass{background:rgba(255,255,255,0.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:20px}
 .neon-green{color:#00ff88;text-shadow:0 0 20px rgba(0,255,136,0.5)}
 .neon-pink{color:#ff6b9d;text-shadow:0 0 20px rgba(255,107,157,0.5)}
+.neon-blue{color:#00d4ff;text-shadow:0 0 20px rgba(0,212,255,0.5)}
 .btn-green{background:#00ff88;color:#0a0a0a;border:none;padding:15px 30px;border-radius:12px;font-weight:bold;font-size:16px;cursor:pointer;transition:all 0.3s;box-shadow:0 0 20px rgba(0,255,136,0.3);width:100%}
 .btn-green:hover{box-shadow:0 0 40px rgba(0,255,136,0.6);transform:scale(1.02)}
 .btn-pink{background:#ff6b9d;color:#0a0a0a;border:none;padding:12px 24px;border-radius:12px;font-weight:bold;cursor:pointer;transition:all 0.3s}
 .btn-pink:hover{box-shadow:0 0 20px rgba(255,107,157,0.4);transform:scale(1.02)}
 .btn-red{background:#ff4444;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:bold;cursor:pointer;transition:all 0.3s}
+.btn-blue{background:#00d4ff;color:#0a0a0a;border:none;padding:8px 16px;border-radius:8px;font-weight:bold;cursor:pointer;transition:all 0.3s}
+.btn-icon{background:rgba(255,255,255,0.1);border:none;color:#fff;padding:10px;border-radius:50%;cursor:pointer;font-size:20px;transition:all 0.3s;width:45px;height:45px;display:flex;align-items:center;justify-content:center}
+.btn-icon:hover{background:rgba(0,255,136,0.2);color:#00ff88}
 input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:15px 20px;border-radius:12px;font-size:16px;width:100%;transition:all 0.3s}
 input:focus{outline:none;border-color:#00ff88;box-shadow:0 0 20px rgba(0,255,136,0.2)}
 input::placeholder{color:rgba(255,255,255,0.3)}
 .screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px}
 .screen.active{display:flex}
-/* CHAT SCREEN FIX - always flex column */
 #chatScreen.active{display:flex;flex-direction:column;padding:0;justify-content:flex-start;align-items:stretch}
-.message{max-width:70%;padding:12px 18px;border-radius:18px;margin-bottom:10px;animation:slideIn 0.3s ease;word-break:break-word}
+.message{max-width:75%;padding:12px 18px;border-radius:18px;margin-bottom:10px;animation:slideIn 0.3s ease;word-break:break-word;position:relative}
 .message.mine{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);margin-right:auto;margin-left:0;border-bottom-left-radius:4px;text-align:left}
 .message.other{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-bottom-right-radius:4px;text-align:right}
 .message.system{background:transparent;border:none;text-align:center;color:rgba(255,255,255,0.5);font-size:12px;max-width:100%}
+.message:hover .msg-actions{opacity:1}
+.msg-actions{position:absolute;top:-25px;right:0;display:flex;gap:5px;opacity:0;transition:all 0.3s;background:rgba(0,0,0,0.8);padding:3px 8px;border-radius:10px;z-index:10}
+.msg-actions button{background:none;border:none;color:#fff;cursor:pointer;font-size:14px;padding:2px 5px}
+.msg-actions button:hover{color:#00ff88}
+.reactions{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.reaction-badge{background:rgba(255,255,255,0.1);border-radius:10px;padding:2px 6px;font-size:12px;cursor:pointer}
+.reaction-badge:hover{background:rgba(0,255,136,0.2)}
 @keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .typing-dot{width:8px;height:8px;background:#00ff88;border-radius:50%;display:inline-block;animation:bounce 1.4s infinite}
 .typing-dot:nth-child(2){animation-delay:0.2s}
@@ -37,8 +47,9 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 ::-webkit-scrollbar-track{background:#111}
 ::-webkit-scrollbar-thumb{background:#00ff88;border-radius:3px}
 .header{position:fixed;top:0;left:0;right:0;background:rgba(10,10,10,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.1);padding:15px 20px;z-index:100;display:flex;justify-content:space-between;align-items:center}
-.chat-container{padding-top:80px;padding-bottom:100px;max-width:800px;margin:0 auto;height:100vh;overflow-y:auto;width:100%}
-.input-area{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);padding:15px 20px;display:flex;gap:10px;align-items:center;max-width:800px;margin:0 auto;left:50%;transform:translateX(-50%);width:100%}
+.chat-container{padding-top:80px;padding-bottom:120px;max-width:800px;margin:0 auto;height:100vh;overflow-y:auto;width:100%}
+.input-area{position:fixed;bottom:0;left:0;right:0;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,0.1);padding:10px 20px;display:flex;gap:8px;align-items:center;max-width:800px;margin:0 auto;left:50%;transform:translateX(-50%);width:100%;flex-wrap:wrap}
+.input-row{display:flex;gap:8px;align-items:center;width:100%;flex:1}
 .status-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .status-online{background:#00ff88;box-shadow:0 0 10px #00ff88}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
@@ -54,13 +65,36 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 .member-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;margin-bottom:4px}
 .member-item:hover{background:rgba(255,255,255,0.05)}
 .room-code-box{background:rgba(0,255,136,0.1);border:2px dashed rgba(0,255,136,0.5);border-radius:16px;padding:20px;text-align:center;margin-top:15px}
-.room-code-text{font-size:28px;font-weight:bold;letter-spacing:5px;color:#00ff88;font-family:monospace}
+.room-code-text{font-size:32px;font-weight:bold;letter-spacing:8px;color:#00ff88;font-family:monospace}
 .copy-btn{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:12px;transition:all 0.3s}
 .copy-btn:hover{background:rgba(0,255,136,0.2);border-color:#00ff88}
-/* Room code stay visible */
-#createdRoom{display:block !important}
-#roomCodeDisplay{font-size:32px;font-weight:bold;color:#00ff88;letter-spacing:8px}
-@media(max-width:600px){.message{max-width:85%}.input-area{padding:10px 15px}.header{padding:10px 15px}}
+/* File messages */
+.file-msg{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);padding:10px 15px;border-radius:12px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all 0.3s}
+.file-msg:hover{background:rgba(0,212,255,0.2)}
+.file-msg img{max-width:200px;max-height:200px;border-radius:8px}
+.file-msg video{max-width:250px;max-height:200px;border-radius:8px}
+.file-msg audio{width:250px}
+.voice-msg{background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.3);padding:10px 15px;border-radius:20px;display:flex;align-items:center;gap:10px}
+.voice-play{width:35px;height:35px;border-radius:50%;background:#ff6b9d;border:none;color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.voice-wave{display:flex;gap:2px;align-items:center;height:20px}
+.voice-bar{width:3px;background:#ff6b9d;border-radius:2px;animation:wave 1s infinite}
+@keyframes wave{0%,100%{height:5px}50%{height:20px}}
+/* Emoji picker */
+.emoji-picker{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:10px;display:none;flex-wrap:wrap;gap:5px;max-width:300px;z-index:100}
+.emoji-picker.show{display:flex}
+.emoji-btn{background:none;border:none;font-size:24px;cursor:pointer;padding:5px;border-radius:8px;transition:all 0.2s}
+.emoji-btn:hover{background:rgba(255,255,255,0.1);transform:scale(1.2)}
+/* Recording */
+.recording-indicator{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(255,0,0,0.2);border:1px solid #ff4444;border-radius:20px;padding:10px 20px;display:none;align-items:center;gap:10px;z-index:100;animation:pulse-red 1s infinite}
+.recording-indicator.show{display:flex}
+@keyframes pulse-red{0%,100%{box-shadow:0 0 0 0 rgba(255,68,68,0.4)}50%{box-shadow:0 0 20px 5px rgba(255,68,68,0.2)}}
+/* Reply */
+.reply-box{background:rgba(255,255,255,0.05);border-right:3px solid #00ff88;padding:8px 12px;margin-bottom:8px;border-radius:8px;font-size:12px;color:rgba(255,255,255,0.7)}
+.reply-box strong{color:#00ff88}
+/* Progress bar */
+.progress-bar{width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:5px;overflow:hidden}
+.progress-fill{height:100%;background:#00ff88;width:0%;transition:width 0.3s}
+@media(max-width:600px){.message{max-width:85%}.input-area{padding:10px 15px}.header{padding:10px 15px}.file-msg img,.file-msg video{max-width:150px}}
 </style>
 <base target="_blank">
 </head>
@@ -76,7 +110,7 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 <div class="glass" style="padding:40px;text-align:center;max-width:420px;width:100%">
 <div style="font-size:56px;margin-bottom:10px;animation:float 3s infinite">👻</div>
 <h1 style="font-size:40px;font-weight:bold;margin-bottom:5px" class="neon-green">GHOST 77</h1>
-<p style="color:rgba(255,255,255,0.5);margin-bottom:25px">دردشة مشفرة • ما كاين حتى تخزين</p>
+<p style="color:rgba(255,255,255,0.5);margin-bottom:25px">دردشة مشفرة • ملفات • صوت • فيديو</p>
 
 <div style="margin-bottom:20px">
 <label style="display:block;color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:8px;text-align:right">🆔 رقمك السري (تلقائي)</label>
@@ -91,7 +125,7 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 <button class="btn-green" onclick="startChat()">👻 دخل للدردشة</button>
 
 <div style="margin-top:25px;display:flex;gap:15px;justify-content:center;font-size:12px;color:rgba(255,255,255,0.4);flex-wrap:wrap">
-<span>🔐 تشفير كامل</span><span>💾 RAM فقط</span><span>👥 10 أشخاص</span><span>⚡ فوري</span>
+<span>🔐 تشفير كامل</span><span>💾 RAM فقط</span><span>👥 10 أشخاص</span><span>📁 ملفات</span><span>🎙️ صوت</span><span>⚡ فوري</span>
 </div>
 </div>
 </div>
@@ -117,7 +151,6 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 </div>
 </div>
 
-<!-- ROOM CODE - STAYS VISIBLE -->
 <div id="createdRoom" style="display:none;margin-top:20px">
 <div class="room-code-box">
 <p style="color:rgba(255,255,255,0.6);margin-bottom:10px;font-size:14px">🎫 كود الغرفة ديالك:</p>
@@ -130,7 +163,7 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 </div>
 </div>
 
-<!-- CHAT SCREEN - FIXED -->
+<!-- CHAT SCREEN -->
 <div id="chatScreen" class="screen" style="flex-direction:column;padding:0;justify-content:flex-start;align-items:stretch">
 <div class="header">
 <div style="display:flex;align-items:center;gap:12px">
@@ -156,55 +189,77 @@ input::placeholder{color:rgba(255,255,255,0.3)}
 
 <div class="chat-container" id="messagesContainer"></div>
 
-<div id="typingIndicator" style="display:none;position:fixed;bottom:80px;right:20px;color:rgba(255,255,255,0.5);font-size:12px;background:rgba(0,0,0,0.5);padding:5px 12px;border-radius:20px">
+<div id="typingIndicator" style="display:none;position:fixed;bottom:120px;right:20px;color:rgba(255,255,255,0.5);font-size:12px;background:rgba(0,0,0,0.5);padding:5px 12px;border-radius:20px">
 <span id="typingName"></span> كيكتب
 <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
 </div>
 
+<!-- Recording Indicator -->
+<div class="recording-indicator" id="recordingIndicator">
+<span style="color:#ff4444;font-size:20px">🔴</span>
+<span>جاري التسجيل...</span>
+<span id="recordingTime">0:00</span>
+</div>
+
+<!-- Emoji Picker -->
+<div class="emoji-picker" id="emojiPicker">
+<button class="emoji-btn" onclick="addEmoji('😀')">😀</button>
+<button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+<button class="emoji-btn" onclick="addEmoji('🥰')">🥰</button>
+<button class="emoji-btn" onclick="addEmoji('😎')">😎</button>
+<button class="emoji-btn" onclick="addEmoji('🤔')">🤔</button>
+<button class="emoji-btn" onclick="addEmoji('😭')">😭</button>
+<button class="emoji-btn" onclick="addEmoji('😡')">😡</button>
+<button class="emoji-btn" onclick="addEmoji('👻')">👻</button>
+<button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+<button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+<button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+<button class="emoji-btn" onclick="addEmoji('👎')">👎</button>
+<button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
+<button class="emoji-btn" onclick="addEmoji('🙏')">🙏</button>
+<button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
+<button class="emoji-btn" onclick="addEmoji('✅')">✅</button>
+<button class="emoji-btn" onclick="addEmoji('❌')">❌</button>
+<button class="emoji-btn" onclick="addEmoji('⚠️')">⚠️</button>
+<button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
+<button class="emoji-btn" onclick="addEmoji('💀')">💀</button>
+</div>
+
+<!-- Input Area -->
 <div class="input-area">
-<input type="text" id="messageInput" placeholder="كتب رسالة مشفرة... 🔐" style="flex:1" onkeypress="handleKeyPress(event)" oninput="handleTyping()">
-<button class="btn-green" onclick="sendMessage()" style="padding:12px 20px;width:auto">📤</button>
+<div class="input-row">
+<button class="btn-icon" onclick="toggleEmojiPicker()" title="إيموجي">😀</button>
+<button class="btn-icon" onclick="document.getElementById('fileInput').click()" title="ملف">📎</button>
+<input type="file" id="fileInput" style="display:none" onchange="handleFileSelect(event)" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt">
+<button class="btn-icon" onclick="toggleVoiceRecord()" id="voiceBtn" title="صوت">🎙️</button>
+<input type="text" id="messageInput" placeholder="كتب رسالة..." style="flex:1" onkeypress="handleKeyPress(event)" oninput="handleTyping()">
+<button class="btn-green" onclick="sendMessage()" style="padding:12px 20px;width:auto;font-size:18px">📤</button>
+</div>
 </div>
 </div>
 
 <script>
-let socket=null,nickname='',roomId='',typingTimeout=null,myUserId='',myPrivateKey='',currentUsers=[];
+// ========== VARIABLES ==========
+let socket=null,nickname='',roomId='',typingTimeout=null,myUserId='',roomKey='',currentUsers=[],replyTo=null;
+let mediaRecorder=null,audioChunks=[],isRecording=false,recordingInterval=null,recordingSeconds=0;
 
+// ========== USER ID ==========
 function generateUserId(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';let id='#';for(let i=0;i<6;i++)id+=c.charAt(Math.floor(Math.random()*c.length));return id}
 function getOrCreateUserId(){let id=localStorage.getItem('ghost77_userId');if(!id){id=generateUserId();localStorage.setItem('ghost77_userId',id)}return id}
-function generateKeys(){const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';let k='';for(let i=0;i<32;i++)k+=c.charAt(Math.floor(Math.random()*c.length));return k}
-function encrypt(t,k){let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));return btoa(r)}
-function decrypt(e,k){try{const t=atob(e);let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));return r}catch(x){return'[مشفر]'}}
 
+// ========== ENCRYPTION (SHARED KEY) ==========
+function encrypt(text,key){if(!key)return btoa(text);let r='';for(let i=0;i<text.length;i++)r+=String.fromCharCode(text.charCodeAt(i)^key.charCodeAt(i%key.length));return btoa(r)}
+function decrypt(encrypted,key){if(!key)try{return atob(encrypted)}catch(e){return encrypted}try{const t=atob(encrypted);let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^key.charCodeAt(i%key.length));return r}catch(e){return'[تعذر فك التشفير]'}}
+
+// ========== TOAST ==========
 function showToast(msg,type,actions){const c=document.getElementById('toastContainer'),t=document.createElement('div');t.className='toast';let i='👻';if(type==='success')i='✅';if(type==='error')i='❌';if(type==='request')i='🔔';let h='<div style="font-size:24px">'+i+'</div><div style="flex:1"><div style="font-weight:bold;color:#00ff88;font-size:14px;margin-bottom:3px">GHOST 77</div><div style="font-size:13px;color:rgba(255,255,255,0.9)">'+msg+'</div></div>';if(actions){h+='<div style="display:flex;gap:8px"><button class="btn-green" style="padding:6px 14px;font-size:12px" onclick="'+actions.yesAction+';this.parentElement.parentElement.remove()">نعم</button><button class="btn-red" style="padding:6px 14px;font-size:12px" onclick="'+actions.noAction+';this.parentElement.parentElement.remove()">لا</button></div>'}t.innerHTML=h;c.appendChild(t);if(!actions){setTimeout(function(){t.classList.add('toast-exit');setTimeout(function(){t.remove()},300)},5000)}}
 
+// ========== COPY ==========
 function copyUserId(){navigator.clipboard.writeText(myUserId).then(function(){showToast('تم نسخ الرقم!','success')})}
 function copyRoomCode(){const c=document.getElementById('roomCodeDisplay').textContent;navigator.clipboard.writeText(c).then(function(){showToast('تم نسخ الكود!','success')})}
 
-function startChat(){const inp=document.getElementById('nicknameInput');nickname=inp.value.trim();if(nickname.length<2){showToast('الاسم يجب أن يكون حرفين على الأقل!','error');return}myPrivateKey=generateKeys();myUserId=getOrCreateUserId();document.getElementById('userNickname').textContent=nickname;document.getElementById('userIdDisplay').textContent=myUserId;document.getElementById('roomsUserId').textContent=myUserId;document.getElementById('chatUserId').textContent=myUserId;showScreen('roomsScreen');connectSocket()}
+// ========== START ==========
+function startChat(){const inp=document.getElementById('nicknameInput');nickname=inp.value.trim();if(nickname.length<2){showToast('الاسم يجب أن يكون حرفين على الأقل!','error');return}myUserId=getOrCreateUserId();document.getElementById('userNickname').textContent=nickname;document.getElementById('userIdDisplay').textContent=myUserId;document.getElementById('roomsUserId').textContent=myUserId;document.getElementById('chatUserId').textContent=myUserId;showScreen('roomsScreen');connectSocket()}
 
-function connectSocket(){const url=window.location.origin;socket=io(url);socket.on('connect',function(){console.log('Connected');showToast('متصل بالسيرفر!','success')});socket.on('disconnect',function(){console.log('Disconnected');showToast('انقطع الاتصال!','error')});socket.on('room-created',function(data){roomId=data.roomId;document.getElementById('roomCodeDisplay').textContent=data.roomId;document.getElementById('createdRoom').style.display='block';showToast('🎫 كود الغرفة: '+data.roomId,'success');/* WAIT 10 SECONDS BEFORE AUTO JOIN*/setTimeout(function(){requestJoinRoom(data.roomId)},10000)});socket.on('joined-room',function(data){roomId=data.roomId;currentUsers=data.users;document.getElementById('chatRoomId').textContent=data.roomId;document.getElementById('onlineCount').textContent=data.users.length;showScreen('chatScreen');updateMembersList();showToast('✅ دخلت الغرفة!','success')});socket.on('user-joined',function(data){addMessage('system','👻 '+data.nickname+' ('+data.userId+') دخل للغرفة');updateOnlineCount(1)});socket.on('user-left',function(data){addMessage('system','👋 '+data.nickname+' ('+data.userId+') خرج من الغرفة');updateOnlineCount(-1)});socket.on('new-message',function(data){const d=decrypt(data.encrypted,myPrivateKey);addMessage('other',d,data.sender,data.senderId)});socket.on('user-typing',function(data){const ind=document.getElementById('typingIndicator'),tn=document.getElementById('typingName');if(data.isTyping){tn.textContent=data.nickname;ind.style.display='block'}else{ind.style.display='none'}});socket.on('join-request',function(data){showToast(data.nickname+' ('+data.userId+') يريد الدخول','request',{yesAction:"approveJoin('"+data.requesterId+"',true)",noAction:"approveJoin('"+data.requesterId+"',false)"})});socket.on('join-rejected',function(data){showToast('تم رفض طلبك!','error');document.getElementById('createdRoom').style.display='none';showScreen('roomsScreen')});socket.on('error',function(msg){showToast('خطأ: '+msg,'error')})}
-
-function approveJoin(rid,ap){socket.emit('approve-join',{requesterId:rid,approved:ap})}
-function createRoom(){if(!socket){showToast('غير متصل بالسيرفر!','error');return}socket.emit('create-room',{nickname:nickname,userId:myUserId})}
-function joinRoom(){const id=document.getElementById('joinRoomId').value.trim().toUpperCase();if(id)requestJoinRoom(id)}
-function requestJoinRoom(id){if(!socket){showToast('غير متصل بالسيرفر!','error');return}socket.emit('request-join-room',{roomId:id,nickname:nickname,userId:myUserId})}
-function leaveRoom(){if(socket)socket.disconnect();location.reload()}
-
-function sendMessage(){const inp=document.getElementById('messageInput');const text=inp.value.trim();if(!text)return;const enc=encrypt(text,myPrivateKey);socket.emit('send-message',{roomId:roomId,encrypted:enc,timestamp:Date.now()});addMessage('mine',text,null,myUserId);inp.value='';stopTyping()}
-function handleKeyPress(e){if(e.key==='Enter')sendMessage()}
-function handleTyping(){socket.emit('typing',{roomId:roomId,isTyping:true});clearTimeout(typingTimeout);typingTimeout=setTimeout(stopTyping,2000)}
-function stopTyping(){socket.emit('typing',{roomId:roomId,isTyping:false})}
-
-function addMessage(type,content,sender,senderId){const c=document.getElementById('messagesContainer');const d=document.createElement('div');d.className='message '+type;if(type==='system'){d.textContent=content}else if(type==='other'){d.innerHTML='<div style="font-size:11px;color:#00ff88;margin-bottom:4px;display:flex;align-items:center;gap:5px"><span>'+sender+'</span><span style="color:rgba(255,255,255,0.3);font-size:10px">'+(senderId||'')+'</span></div><div>'+content+'</div>'}else{d.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:4px;text-align:left">أنا '+myUserId+'</div><div>'+content+'</div>'}c.appendChild(d);c.scrollTop=c.scrollHeight}
-
-function updateOnlineCount(ch){const c=document.getElementById('onlineCount');c.textContent=parseInt(c.textContent)+ch}
-function toggleMembers(){document.getElementById('membersList').classList.toggle('show')}
-function updateMembersList(){const c=document.getElementById('membersListContent');let h='';for(let i=0;i<currentUsers.length;i++){const u=currentUsers[i];h+='<div class="member-item"><span class="status-dot status-online"></span><span style="font-size:13px">'+u.nickname+'</span><span style="color:rgba(255,255,255,0.3);font-size:11px;margin-right:auto">'+(u.userId||'')+'</span></div>'}c.innerHTML=h}
-function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active')});const sc=document.getElementById(id);if(sc)sc.classList.add('active')}
-
-(function initUserId(){const tid=getOrCreateUserId();const d=document.getElementById('userIdDisplay');if(d)d.textContent=tid})();
-document.addEventListener('DOMContentLoaded',function(){const tid=getOrCreateUserId();const d=document.getElementById('userIdDisplay');if(d)d.textContent=tid});
-</script>
-</body>
-  </html>
+// ========== SOCKET ==========
+function connectSocket(){const url=window.location.origin;socket=io(url);socket.on('connect',function(){console.log('Connected');showToast('متصل بالسيرفر!','success')});socket.on('disconnect',function(){showToast('انقطع الاتصال!','e
