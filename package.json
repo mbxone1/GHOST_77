@@ -1,7 +1,4 @@
-
-# Create updated package.json
-
-package_json_new = '''{
+{
   "name": "ghost77-chat",
   "version": "2.0.0",
   "description": "End-to-end encrypted chat - GHOST 77",
@@ -15,12 +12,4 @@ package_json_new = '''{
     "socket.io": "^4.7.4",
     "cors": "^2.8.5"
   }
-}'''
-
-with open('/mnt/agents/output/package.json', 'w', encoding='utf-8') as f:
-    f.write(package_json_new)
-
-print("✅ package.json created successfully!")
-print("\n" + "="*60)
-print("📦 جميع الملفات جاهزة!")
-print("="*60)
+}
