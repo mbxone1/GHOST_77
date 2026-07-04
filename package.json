@@ -1,7 +1,7 @@
 {
   "name": "ghost77-chat",
-  "version": "2.0.0",
-  "description": "GHOST 77 Encrypted Chat",
+  "version": "3.0.0",
+  "description": "GHOST 77 Ultimate Encrypted Chat",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
