@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('New connection:', socket.id);
+  console.log('New:', socket.id);
 
   socket.on('create-room', ({ nickname, userId }) => {
     const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
       return;
     }
     if (room.users.length >= room.maxUsers) {
-      socket.emit('error', 'Room is full');
+      socket.emit('error', 'Room full');
       return;
     }
 
@@ -69,8 +69,8 @@ io.on('connection', (socket) => {
     if (approved) {
       approveJoin(requesterId);
     } else {
-      const request = pendingJoins.get(requesterId);
-      if (request) {
+      const req = pendingJoins.get(requesterId);
+      if (req) {
         io.to(requesterId).emit('join-rejected', { reason: 'Rejected' });
         pendingJoins.delete(requesterId);
       }
@@ -78,24 +78,23 @@ io.on('connection', (socket) => {
   });
 
   function approveJoin(requesterId) {
-    const request = pendingJoins.get(requesterId);
-    if (!request) return;
+    const req = pendingJoins.get(requesterId);
+    if (!req) return;
 
-    const room = rooms.get(request.roomId);
+    const room = rooms.get(req.roomId);
     if (!room) return;
 
-    const allSockets = Array.from(io.sockets.sockets.values());
-    const targetSocket = allSockets.find(s => s.id === requesterId);
+    const all = Array.from(io.sockets.sockets.values());
+    const target = all.find(s => s.id === requesterId);
+    if (!target) return;
 
-    if (!targetSocket) return;
+    target.join(req.roomId);
+    room.users.push({ id: requesterId, nickname: req.nickname, userId: req.userId });
+    users.set(requesterId, { nickname: req.nickname, roomId: req.roomId, userId: req.userId });
 
-    targetSocket.join(request.roomId);
-    room.users.push({ id: requesterId, nickname: request.nickname, userId: request.userId });
-    users.set(requesterId, { nickname: request.nickname, roomId: request.roomId, userId: request.userId });
-
-    targetSocket.to(request.roomId).emit('user-joined', { nickname: request.nickname, userId: request.userId });
-    targetSocket.emit('joined-room', { roomId: request.roomId, users: room.users });
-
+    target.to(req.roomId).emit('user-joined', { nickname: req.nickname, userId: req.userId });
+    target.emit('joined-room', { roomId: req.roomId, users: room.users });
+    
     pendingJoins.delete(requesterId);
   }
 
@@ -120,7 +119,11 @@ io.on('connection', (socket) => {
   socket.on('typing', ({ roomId, isTyping }) => {
     const user = users.get(socket.id);
     if (user) {
-      socket.to(roomId).emit('user-typing', { nickname: user.nickname, userId: user.userId, isTyping });
+      socket.to(roomId).emit('user-typing', { 
+        nickname: user.nickname, 
+        userId: user.userId, 
+        isTyping 
+      });
     }
   });
 
@@ -130,10 +133,12 @@ io.on('connection', (socket) => {
       const room = rooms.get(user.roomId);
       if (room) {
         room.users = room.users.filter(u => u.id !== socket.id);
-        socket.to(user.roomId).emit('user-left', { nickname: user.nickname, userId: user.userId });
+        socket.to(user.roomId).emit('user-left', { 
+          nickname: user.nickname, 
+          userId: user.userId 
+        });
         if (room.users.length === 0) {
           rooms.delete(user.roomId);
-          console.log('Room deleted:', user.roomId);
         } else {
           if (room.hostId === socket.id && room.users.length > 0) {
             room.hostId = room.users[0].id;
@@ -143,7 +148,6 @@ io.on('connection', (socket) => {
       users.delete(socket.id);
     }
     pendingJoins.delete(socket.id);
-    console.log('Disconnected:', socket.id);
   });
 });
 
@@ -155,5 +159,5 @@ setInterval(() => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log('GHOST 77 running on port ' + PORT);
+  console.log('GHOST 77 on port ' + PORT);
 });
