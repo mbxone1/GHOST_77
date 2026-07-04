@@ -1,4 +1,4 @@
-server_js_perfect = """const express = require('express');
+const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
 
     const allSockets = Array.from(io.sockets.sockets.values());
     const targetSocket = allSockets.find(s => s.id === requesterId);
-    
+
     if (!targetSocket) return;
 
     targetSocket.join(request.roomId);
@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
 
     targetSocket.to(request.roomId).emit('user-joined', { nickname: request.nickname, userId: request.userId });
     targetSocket.emit('joined-room', { roomId: request.roomId, users: room.users });
-    
+
     pendingJoins.delete(requesterId);
   }
 
@@ -157,12 +157,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log('GHOST 77 running on port ' + PORT);
 });
-"""
-
-with open('/mnt/agents/output/server.js', 'w', encoding='utf-8') as f:
-    f.write(server_js_perfect)
-
-print("✅ server.js FIXED - NO comments, NO errors!")
-print(f"Size: {len(server_js_perfect)} chars")
-print("\nFirst 200 chars:")
-print(server_js_perfect[:200])
