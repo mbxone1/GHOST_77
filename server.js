@@ -1,6 +1,4 @@
-
-# Create a completely clean, working server.js with NO errors
-server_js_final = r'''const express = require('express');
+server_js_perfect = """const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
@@ -159,10 +157,12 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log('GHOST 77 running on port ' + PORT);
 });
-'''
+"""
 
 with open('/mnt/agents/output/server.js', 'w', encoding='utf-8') as f:
-    f.write(server_js_final)
+    f.write(server_js_perfect)
 
-print("✅ server.js created - clean & working!")
-print(f"Size: {len(server_js_final)} chars")
+print("✅ server.js FIXED - NO comments, NO errors!")
+print(f"Size: {len(server_js_perfect)} chars")
+print("\nFirst 200 chars:")
+print(server_js_perfect[:200])
